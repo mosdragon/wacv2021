@@ -1,0 +1,172 @@
+@charset "utf-8";
+
+// Import a Google Font
+@import url('https://fonts.googleapis.com/css?family=Nunito:400,700');
+
+// Set your brand colors
+$turquoise: #0F7173;
+
+$dark_gray: #757763;
+$beige-light: #D0D1CD;
+$beige-lighter: #EFF0EB;
+
+$charcoal: #232528;
+$orange: #FFA400;
+$hd_orange: #f96302;
+$gold: #e1bc29;
+
+// Blues
+$light_blue: #3772FF;
+$ocean_blue: #2974bd;
+$deep_blue: #0e273f;
+$dark_blue: #050d15;
+$navy_blue: #09027e;
+
+// Assign colors
+$footer-color: $orange;
+$navbar: $orange;
+$navbar-dropdown: $gold;
+$alt: $orange;
+
+// Update Bulma's global variables
+$family-sans-serif: "Nunito", sans-serif;
+$grey-dark: $dark_gray;
+$grey-light: $beige-light;
+$primary: $hd_orange;
+$link: $charcoal;
+$widescreen-enabled: true;
+$fullhd-enabled: false;
+
+// Update some of Bulma's component variables
+$body-background-color: $beige-lighter;
+$control-border-width: 2px;
+$input-border-color: transparent;
+$input-shadow: none;
+
+$custom-colors: (
+  "navy_blue": ($navy_blue),
+  "gold": ($gold),
+  
+  "orange": ($orange),
+  "hd_orange": ($hd_orange),
+
+  "charcoal": ($charcoal),
+  "light_blue": ($light_blue),
+  "ocean_blue": ($ocean_blue),
+
+  "navbar": ($navbar),
+  "navbar-dropdown": ($navbar-dropdown),
+  "footer": ($footer-color),
+);
+
+
+@import "bulma/sass/utilities/_all.sass";
+@import "bulma/sass/base/_all.sass";
+@import "bulma/sass/elements/_all.sass";
+@import "bulma/sass/form/_all.sass";
+@import "bulma/sass/components/_all.sass";
+@import "bulma/sass/layout/_all.sass";
+@import "bulma/sass/grid/_all.sass";
+
+.card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-block{
+  height: 100%;
+}
+
+#section_title {
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+// New footer
+$footer-new-bg: $navy_blue;
+.footer-new {
+  // background-color: $footer-new-bg;
+  padding: $footer-padding;
+  // @if $footer-color {
+  //   color: $footer-color;
+  // }    
+}
+  
+// Customizations by Osama
+
+#logo_box {
+    // margin-top: 50px;
+    background-image: url("../img/logo.jpg");
+    background-position: center center;
+    background-repeat:  no-repeat;
+    background-size: contain;
+    background-size: scroll;
+
+    @include mobile {
+      height: 220px;
+    }
+
+    @include from($tablet) {
+      height: 250px;  
+    }
+};
+
+.school_logo {
+  height: 50px;
+  width: 50px;
+}
+
+.has-background-secondary {
+    background-color: $link;
+}
+
+.icon_pre {
+  color: $alt;
+  font-size: 2.5em;
+};
+
+.icon_pre_same_size {
+  color: $alt;
+};
+
+.icon_pre_alt {
+  color: $alt;
+  font-size: 2.5em;
+};
+
+.icon_pre_gold {
+  color: $gold;
+  font-size: 2.5em;
+};
+
+.icon_pre_alt_text {
+    color: $alt;
+    font-size: 2em;
+}
+
+.foodlist {
+    font-size: 0.85em;
+}
+
+
+.top_hero {
+    @include until($desktop) {
+      /* Add a margin so navbar isn't too close on mobile/tablet */
+      margin-top: 40px;
+    };
+};
+
+#googleMap {
+    padding: 50px;
+    width: 100%;
+
+    @include mobile {
+        height: 450px;
+        max-height: 90%;
+    };
+
+    @include from($tablet) {
+        height: 550px;
+    }
+};

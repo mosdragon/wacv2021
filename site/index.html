@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+
+        <!-- For Bots -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta name="author" content="Osama Sakhi" />
+        <meta name="robots" content="all" />
+        <meta name="googlebot" content="all" />
+
+        <meta name="Description" content="Home Depot's Computer Vision Workshop for the KDD 2020 Conference." />
+
+        <meta name="keywords" content="deep learning, computer vision, The Home Depot, segmentation, preprocessing, postprocessing.">
+
+        <link href="https://storage.googleapis.com/kdd2020hdvisai/static/index.html" rel="canonical" />
+
+        <link rel="icon" href="img/ds_logo.png">
+
+        <!-- Bulma + Customizations -->
+        <link rel="stylesheet" href="css/styles.css">
+
+        <!-- Font-Awesome for Icons -->
+        <link rel="stylesheet" href="css/fontawesome.min.css">
+        <link rel="stylesheet" href="css/solid.min.css">
+        <link rel="stylesheet" href="css/brands.css">
+
+
+        <script src="js/jquery.min.js"></script>
+
+        <!-- Font-Awesome JS, unused for now -->
+        <script src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+
+        <!-- TODO: Add Global site tag (gtag.js) - Google Analytics -->
+
+        <!-- Google Map, Toggle for Menu, etc all in helpers.js -->
+        <script src="js/helpers.js"></script>
+
+        <title>Home Depot Computer Vision Workshop | KDD 2020</title>
+
+    </head>
+
+
+    <body class="has-navbar-fixed">
+
+        <section class="hero-container">
+            <div class="hero is-medium has-background-white">
+
+                <div class="hero-head">
+                    <nav class="navbar is-fixed-top has-background-white">
+
+                        <div class="navbar-brand">
+                            <!-- <div class="navbar-item nav_override"> -->
+                            <!-- <img src="img/logo.jpg" alt="HD Logo."> -->
+                            <!-- </div> -->
+
+                            <a role="button" class="navbar-burger has-text-navbar" aria-label="menu" aria-expanded="false">
+                                <span aria-hidden="true"></span>
+                                <span aria-hidden="true"></span>
+                                <span aria-hidden="true"></span>
+                            </a>
+                        </div>
+
+                        <div class="navbar-menu">
+                            <div class="navbar-end">
+                                <a class="navbar-item has-text-navbar" href="#top">Home</a>
+                                <a class="navbar-item has-text-navbar" href="#abstract">Abstract</a>
+                                <a class="navbar-item has-text-navbar" href="#presenters">Presenters</a>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+
+                <div class="hero-body has-text-centered" id="top">
+                    <div id="logo_box"></div>
+                    <br>
+                    <h1 class="title">
+                        Home Depot's KDD 2020 Workshop
+                    </h1>
+                    <h2 class="subtitle">
+                        <i>Computer Vision: Deep Dive into Segmentation Approaches</i>
+                    </h2>
+                    <br>
+
+                    <div class="content is-medium">
+                        <p class="is-medium">
+                        <strong>Presentation Date:</strong> TBD
+                        </p>
+                        <p>
+                        <a href="https://github.com/mosdragon/kdd2020/" class="has-text-orange" target="_blank">
+                            Workshop Resources
+                        </a>
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Abstract Here -->
+        <section id="abstract" class="section has-background-light">
+            <div class="container">
+                <div class="has-text-centered"  id="section_title">
+                    <h1 class="title">
+                        Abstract
+                    </h1>
+                </div>
+
+                <div class="columns is-centered">
+                    <div class="column is-four-fifths">
+                        <br>
+
+                        <p>
+                        Image segmentation is the task of associating pixels in an image with their respective object class labels. Many deep learning-based approaches have been developed for image-level object recognition and pixel-level scene understanding — with the latter requiring a much denser annotation of scenes with a large set of objects. This tutorial provides an end-to-end pipeline for performing image segmentation using the state-of-art deep learning approaches and public datasets.
+                        </p>
+                        <br>
+
+                        <p>
+                        The ADE20K dataset is a densely annotated dataset spanning a total of 3,169 object classes across 1,072 complex everyday scenes. There are a total of 25k images with an average of 19.5 annotated instances and 10.5 annotated object classes per image. Despite the impressive volume and variety of this dataset, efforts have not been made to realize its full potential. The goal of this tutorial is to provide participants with a strong understanding of how to build image segmentation models while unlocking the full potential of the ADE20K dataset for developing practical applications.
+                        </p>
+                        <br>
+
+                        <p>
+                        The hands-on session will provide instructions for dataset customization, transformation, and training, validating, and applying segmentation models. In addition to ADE20K, various other open-source image datasets including Microsoft COCO, PASCAL VOC2017, and SUN will be introduced. Performances of various state-of-art segmentation models including U-Net, DeepLab, PSPNet, SegNet, and Mask R-CNN will be compared. Codebase written using Jupyter notebooks with comments and visualizations will be provided and details for prerequisite installations will also be included.
+                        </p>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRESENTERS HERE -->
+        <section id="presenters" class="section has-background-white">
+
+            <div class="container">
+                <div class="has-text-centered"  id="section_title">
+                    <h1 class="title">
+                        Presenters
+                    </h1>
+                </div>
+                <br>
+
+                <div class="columns">
+                    <!-- Cody -->
+                    <div class="column is-half">
+                        <div class="card">
+                            <div class="card-image">
+                                <figure class="image is-square">
+                                    <img src="img/cody.jpg" alt="Cody Wang headshot.">
+                                </figure>
+                            </div>
+                            <div class="card-content">
+                                <div class="media">
+                                    <div class="media-left">
+                                        <div>
+                                            <img src="img/gt.png" class="school_logo">
+                                        </div>
+                                    </div>
+
+                                    <div class="media-content">
+                                        <p class="title is-4">Yuanbo (Cody) Wang, PhD</p>
+                                        <p class="subtitle is-6">Data Scientist @ The Home Depot</p>
+                                    </div>
+                                </div>
+
+                                <div class="content">
+                                    Cody is a data scientist on the online visual intelligence team at the Home Depot. He received his PhD from Georgia Institute of Technology in 2019. He received the 2019 Innovative Applications in Analytics Finalist Award from the Caterpillar Informs Analytics Society with his research project on using machine learning to discover best practice across 737 hospital sites. He was also a recipient of the J. Leland Jackson Fellowship Award for being recognized as the Outstanding Bioinformatics Graduate Student of the year at Georgia Tech in 2018. His work at the Home Depot focuses on developing machine learning and deep learning models for improving visual experience for online customers.
+
+                                    <br>
+                                    <br>
+                                    <div class="has-text-centered">
+                                        <a class="button is-primary" href="mailto:yuanbo_wang@homedepot.com">Email</a>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Card -->
+
+                    <!-- Osama -->
+                    <div class="column is-half">
+                        <div class="card">
+                            <div class="card-image">
+                                <figure class="image is-square">
+                                    <img src="img/osama.jpg" alt="Osama Sakhi headshot.">
+                                </figure>
+                            </div>
+                            <div class="card-content">
+                                <div class="media">
+                                    <div class="media-left">
+                                        <div>
+                                            <img src="img/usc.png" class="school_logo">
+                                        </div>
+                                    </div>
+
+                                    <div class="media-content">
+                                        <p class="title is-4">Muhammad (Osama) Sakhi</p>
+                                        <p class="subtitle is-6">Data Scientist @ The Home Depot</p>
+                                    </div>
+                                </div>
+
+                                <div class="content">
+                                    Osama is a data scientist also on the visual intelligence team at The Home Depot. He received his Bachelor’s in Computer Science and Master’s in Computational Science & Engineering from the Georgia Institute of Technology in 2017 and 2019, respectively. Starting August 2020, Osama will begin his PhD in Electrical Engineering from the University of Southern California. His work at The Home Depot is primarily focused on training & fine-tuning models and developing post-processing techniques to aid in image segmentation tasks that are of interest to the entire visual intelligence team.
+                                    <br>
+                                    <br>
+                                    <div class="has-text-centered">
+                                        <a class="button is-primary" href="mailto:msakhi@usc.edu">Email</a>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Card -->
+                </div>
+
+                <div class="columns">
+
+                    <!-- Matthew -->
+                    <div class="column is-half">
+                        <div class="card">
+                            <div class="card-image">
+                                <figure class="image is-square">
+                                    <img src="img/matthew.png" alt="Matthew Hagen headshot.">
+                                </figure>
+                            </div>
+                            <div class="card-content">
+                                <div class="media">
+                                    <div class="media-left">
+                                        <div>
+                                            <img src="img/gt.png" class="school_logo">
+                                        </div>
+                                    </div>
+
+                                    <div class="media-content">
+                                        <p class="title is-4">Matthew Hagen, PhD</p>
+                                        <p class="subtitle is-6">Senior Data Scientist @ The Home Depot</p>
+                                    </div>
+                                </div>
+
+                                <div class="content">
+                                    Matthew has a PhD in Bioinformatics from the Georgia Institute of Technology. He conducted postdoctoral research at Georgia Tech, mapping patient diagnoses, procedures, labs and medications to ontological concepts in biomedical terminologies to accurately cluster similar patients. Matthew brings a rich background in both biomedical engineering and computer science and currently holds a position at Home Depot as Senior Data Scientist in Visual Intelligence. Here, he leads a team of interns from the Home Depot innovation lab, Orangeworks, to design and build a new visual compatibility model that generates appealing collections that "complete the look" for décor products.
+
+                                    <br>
+                                    <br>
+                                    <div class="has-text-centered">
+                                        <a class="button is-primary" href="mailto:matthew_hagen@homedepot.com">Email</a>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Card -->
+
+                    <!-- Ala Eddine -->
+                    <div class="column is-half">
+                        <div class="card">
+                            <div class="card-image">
+                                <figure class="image is-square">
+                                    <img src="img/ala_eddine.jpg" alt="Ala Eddine Ayadi headshot.">
+                                </figure>
+                            </div>
+                            <div class="card-content">
+                                <div class="media">
+                                    <div class="media-left">
+                                        <div>
+                                            <img src="img/padua.png" class="school_logo">
+                                        </div>
+                                    </div>
+
+                                    <div class="media-content">
+                                        <p class="title is-4">Ala Eddine Ayadi</p>
+                                        <p class="subtitle is-6">Data Scientist @  LVMH</p>
+                                    </div>
+                                </div>
+
+                                <div class="content">
+                                    Ala Eddine Ayadi is a data scientist at Louis Vuitton Moet Hennessy (LVMH). He is a Kaggle expert and speaker with interests in the fields of machine learning, programming, and big data working on real-life problems. He is also a passion holder for deploying predictive and prospective models. He is actively involved in the Kaggle community and learning from best of the best, sharing his experience with other members. He has gained expert knowledge of cutting-edge machine learning methods and applications and has been focusing on learning many different machine learning approaches, predictive features' engineering, productionize machine learning models and human-in-the-loop data science.
+
+                                    <br>
+                                    <br>
+                                    <div class="has-text-centered">
+                                        <a class="button is-primary" href="mailto:a.ayadi@lvmh.fr">Email</a>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Card -->
+
+                </div>
+            </div>
+
+        </section>
+
+
+        <footer class="footer-new has-background-gray">
+            <div class="container">
+                <div class="columns">
+                    <div class="column">
+                        <img alt="Home Depot Data Science logo." src="img/ds_logo.png" style="max-height: 3.75rem;" >
+                        <br>
+
+                        <span class="has-text-dark">
+                            <span class="icon_pre_same_size">
+                                <i class="fas fa-map-pin fa-fw"></i>
+                            </span>
+                            13011B McCallen Pass <br>
+                            Austin, TX 78753 <br>
+                        </span>
+
+                        <span class="has-text-dark">
+                            <span class="icon_pre_same_size">
+                                <i class="fas fa-map-pin fa-fw"></i>
+                            </span>
+                            2600 Cumberland Parkway <br>
+                            Atlanta, GA 30339 <br>
+                        </span>
+
+                    </div>
+
+                    <div class="column">
+                    </div>
+                </div>
+
+            </div>
+        </footer>
+
+    </body>
+
+</html>
