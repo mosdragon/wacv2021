@@ -2,3 +2,5 @@ db.sqlite3
 **/__pycache__
 **/.DS_Store
 **/.ipynb_checkpoints
+datasets/ADE20K_2016_07_26/
+datasets/bedroom_scenes/
