@@ -284,6 +284,14 @@ def convert_to_pascal(src_dir, dst_dir, required_keywords=[],
 
     print(f"ADE20K dataset has been converted and stored in {dst_dir}")
     print(f"Label mapping has been stored in {labelmap_fp}")
+
+
+def get_new_id_to_label(dst_dir):
+    labelmap_fp = os.path.join(dst_dir, 'new_id_to_label.json')
+    with open(labelmap_fp, 'r') as rf:
+        labelmap_tmp = json.load(rf)
+
+    new_id_to_label = {int(key): val for (key, val) in labelmap_tmp.items()}
     return new_id_to_label
 
 
