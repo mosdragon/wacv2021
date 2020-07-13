@@ -9,6 +9,7 @@ import shutil
 import json
 import os
 import re
+from datetime import datetime
 
 from pathlib import Path
 from PIL import Image
@@ -19,6 +20,11 @@ from imageio import imread, imsave
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+
+import cv2
+
+from pycocotools import mask as cocomask
+from pycocotools import coco as cocoapi
 
 
 def filter_ade20k_dataset(src_dir, required_keywords=[], reject_keywords=[]):
@@ -133,16 +139,21 @@ def get_new_label_mappings(src_dir, grouped_labels):
 
     return (label_to_new_id, new_id_to_label, old_id_to_new_id)
 
+# =============================================================================
+#                               VOC Dataset Format
+# =============================================================================
 
 def create_new_seg_mask(seg_mask, old_id_to_new_id, new_id_to_label):
     """
+    Transform an ADE20K segmentation mask into a VOC-style segmentation
+    mask using the mappings old_id_to_new_id and new_id_to_label.
     """
 
     # Create a new one-channel mask
     h, w, _ = seg_mask.shape
     new_seg_mask = np.zeros((h, w)).astype(np.uint8)
 
-    # The sed_mask's green channel stores the instance id.
+    # The seg_mask's green channel stores the instance id.
     instance_ids = np.unique(seg_mask[:, :, 1])
     for instance_id in instance_ids:
         # Instance id 0 belongs to the background. Since the new_seg_mask is
@@ -196,36 +207,37 @@ def is_sparse_mask(new_seg_mask, threshold=.70):
     return is_sparse
 
 
-def create_pascal_directories(dst_dir):
-    # Create the same directory structure as PASCAL VOC 2012.
+def create_voc_directories(dst_dir):
+    """Creates the same directory structure as the PASCAL VOC 2012 dataset."""
+
     VOC_DIR = os.path.join(dst_dir, 'VOCdevkit', 'VOC2012')
 
     # Create the destination image and segmentation directory if it
     # doesn't exist.
     DST_IMG_DIR = os.path.join(VOC_DIR, 'JPEGImages')
     DST_ANNOT_DIR = os.path.join(VOC_DIR, 'SegmentationClass')
-    DST_IMGSET_DIR = os.path.join(VOC_DIR, 'ImageSets')
-    DST_IMGSET_SEG_DIR = os.path.join(DST_IMGSET_DIR, 'Segmentation')
+    IMGSET_DIR = os.path.join(VOC_DIR, 'ImageSets')
+    PARTITIONS_DIR = os.path.join(IMGSET_DIR, 'Segmentation')
 
     Path(DST_IMG_DIR).mkdir(parents=True, exist_ok=True)
     Path(DST_ANNOT_DIR).mkdir(parents=True, exist_ok=True)
-    Path(DST_IMGSET_DIR).mkdir(parents=True, exist_ok=True)
+    Path(IMGSET_DIR).mkdir(parents=True, exist_ok=True)
 
-    # Create the other directories that PASCAL uses, even if we
+    # Create the other directories that VOC datasets use, even if we
     # leave them empty.
     Path(os.path.join(VOC_DIR, 'Annotations')).mkdir(parents=True, exist_ok=True)
     Path(os.path.join(VOC_DIR, 'SegmentationObject')).mkdir(parents=True, exist_ok=True)
 
     # These directories are all under the ImageSets Directory
-    Path(os.path.join(DST_IMGSET_DIR, 'Action')).mkdir(parents=True, exist_ok=True)
-    Path(os.path.join(DST_IMGSET_DIR, 'Layout')).mkdir(parents=True, exist_ok=True)
-    Path(os.path.join(DST_IMGSET_DIR, 'Main')).mkdir(parents=True, exist_ok=True)
-    Path(os.path.join(DST_IMGSET_DIR, 'Segmentation')).mkdir(parents=True, exist_ok=True)
+    Path(os.path.join(IMGSET_DIR, 'Action')).mkdir(parents=True, exist_ok=True)
+    Path(os.path.join(IMGSET_DIR, 'Layout')).mkdir(parents=True, exist_ok=True)
+    Path(os.path.join(IMGSET_DIR, 'Main')).mkdir(parents=True, exist_ok=True)
+    Path(os.path.join(IMGSET_DIR, 'Segmentation')).mkdir(parents=True, exist_ok=True)
 
-    return (DST_IMG_DIR, DST_ANNOT_DIR, DST_IMGSET_SEG_DIR)
+    return (DST_IMG_DIR, DST_ANNOT_DIR, PARTITIONS_DIR)
 
 
-def convert_to_pascal(src_dir, dst_dir, required_keywords=[],
+def convert_to_voc(src_dir, dst_dir, required_keywords=[],
         reject_keywords=[],
         want_labels=['background',]):
 
@@ -235,7 +247,7 @@ def convert_to_pascal(src_dir, dst_dir, required_keywords=[],
     (label_to_new_id, new_id_to_label, \
         old_id_to_new_id) = get_new_label_mappings(src_dir, want_labels)
 
-    (img_dir, annot_dir, imgset_dir) = create_pascal_directories(dst_dir)
+    (img_dir, annot_dir, partitions_dir) = create_voc_directories(dst_dir)
 
     for partition, samples in metadata.items():
 
@@ -266,9 +278,9 @@ def convert_to_pascal(src_dir, dst_dir, required_keywords=[],
 
         # Now, save the samples to a file.
         if partition == "training":
-            partition_fp = os.path.join(imgset_dir, "train.txt")
+            partition_fp = os.path.join(partitions_dir, "train.txt")
         else:
-            partition_fp = os.path.join(imgset_dir, "val.txt")
+            partition_fp = os.path.join(partitions_dir, "val.txt")
 
         with open(partition_fp, 'w') as wf:
             for sample_name in kept_samples:
@@ -277,22 +289,215 @@ def convert_to_pascal(src_dir, dst_dir, required_keywords=[],
         print(f"Partition {partition} has {len(kept_samples)}.")
 
 
-    # Store the new_id_to_label mapping in the destination directory.
-    labelmap_fp = os.path.join(dst_dir, 'new_id_to_label.json')
+    # Store a labelmap mapping labels to new_ids in the destination directory
+    # so we can visualize the annotations with corresponding labels later.
+    labelmap_fp = os.path.join(dst_dir, 'labelmap.json')
     with open(labelmap_fp, 'w') as wf:
-        json.dump(new_id_to_label, wf, indent=4)
+        json.dump(label_to_new_id, wf, indent=4)
 
     print(f"ADE20K dataset has been converted and stored in {dst_dir}")
     print(f"Label mapping has been stored in {labelmap_fp}")
 
 
-def get_new_id_to_label(dst_dir):
-    labelmap_fp = os.path.join(dst_dir, 'new_id_to_label.json')
+def get_voc_labelmap(dst_dir):
+    """
+    Get the label mapping from a VOC dataset. This is the label_to_new_id
+    mapping.
+    """
+    labelmap_fp = os.path.join(dst_dir, 'labelmap.json')
     with open(labelmap_fp, 'r') as rf:
-        labelmap_tmp = json.load(rf)
+        label_to_new_id = json.load(rf)
 
-    new_id_to_label = {int(key): val for (key, val) in labelmap_tmp.items()}
-    return new_id_to_label
+    return label_to_new_id
+
+# =============================================================================
+#                               COCO Dataset Format
+# =============================================================================
+
+def create_coco_directories(dst_dir):
+    """Creates the same directory structure as the PASCAL VOC 2012 dataset."""
+    trn_dir = os.path.join(dst_dir, "train2014")
+    val_dir = os.path.join(dst_dir, "val2014")
+    annot_dir = os.path.join(dst_dir, "annotations")
+
+    trn_fpath = os.path.join(annot_dir, "instances_train2014.json")
+    val_fpath = os.path.join(annot_dir, "instances_val2014.json")
+
+    # Create the directories
+    Path(trn_dir).mkdir(parents=True, exist_ok=True)
+    Path(val_dir).mkdir(parents=True, exist_ok=True)
+    Path(annot_dir).mkdir(parents=True, exist_ok=True)
+
+    return (trn_dir, val_dir, trn_fpath, val_fpath)
+
+
+def create_coco_image_info(img_fp, image_id, width, height):
+    """
+    Create COCO metadata for each image. Some of the fields specified
+    here with constants are required for the format but unused in our
+    training and inference pipeline.
+    """
+
+    # The sample name is the file's basename without the extension
+    basename = os.path.basename(img_fp)
+    sample_name, extension = basename.split(".")
+
+    image_info = {
+            "id": image_id,
+            "file_name": sample_name,
+            "width": width,
+            "height": height,
+            "date_captured": datetime.utcnow().isoformat(' '),
+            "license": 1,
+            "coco_url": sample_name,
+            "flickr_url": ''
+    }
+    return image_info
+
+
+def process_coco_sample(img_dir, conversion_metadata, old_id_to_new_id, img_fp, seg_fp):
+    local_annotations = []
+    next_ann_id = conversion_metadata['next_ann_id']
+    next_file_id = conversion_metadata['next_file_id']
+
+    # Read the ADE20k mask.
+    seg_mask = imread(seg_fp)
+
+    # The seg_mask's green channel stores the instance id.
+    instance_ids = np.unique(seg_mask[:, :, 1])
+    for instance_id in instance_ids:
+        # Instance id 0 belongs to the background. Since the new_seg_mask is
+        # initialized to 0's (background label), we do not have to explicitly
+        # handle this case.
+        if instance_id == 0:
+            continue
+
+        # Get the pixels corresponding to this instance_id.
+        pixels = (seg_mask[:, :, 1] == instance_id)
+
+        # The red_channel contains encodes the old_id. We adapt the code from
+        # https://groups.csail.mit.edu/vision/datasets/ADE20K/code/loadAde20K.m
+        # to extract the old_id (the integer label).
+        red_channel_val = seg_mask[pixels][0, 0]
+        old_id = red_channel_val // 10 * 256 + instance_id - 1
+
+        # If we're not keeping this category in new dataset, discard it.
+        if old_id not in old_id_to_new_id:
+            continue
+
+        new_id = old_id_to_new_id[old_id]
+
+        # Create a bounding box to store information for object
+        # detection tasks.
+        [x, y, w, h] = cv2.boundingRect(pixels.astype(np.uint8))
+        bbox = [x, y, w, h]
+
+        # NOTE: We're not using the Polygon format for segmentations,
+        # but instead RLE (https://en.wikipedia.org/wiki/Run-length_encoding).
+        # Ensure that your framework supports this, you may need to
+        # enable a flag of some kind in your config files or scripts.
+        rle = cocomask.encode(np.asfortranarray(pixels.astype(np.uint8)))
+        rle['counts'] = rle['counts'].decode('ascii')
+
+        # Put all of the annotation metadata inside one dict.
+        annotation = {
+            'id': next_ann_id,
+            'image_id': next_file_id,
+            'segmentation': rle,
+            'category_id': new_id,
+            'iscrowd': 0,
+            'area': int(np.sum(pixels)),
+            'bbox': bbox,
+        }
+
+        # Add that annotation to our list of annotations, increment
+        # annotation count.
+        local_annotations.append(annotation)
+        next_ann_id += 1
+
+
+    # If we found no annotations, we found no instances of our categories
+    # of interest. Don't add this image to our dataset.
+    if local_annotations == []:
+        return
+
+    # Copy original image file to new location.
+    dest_img_fp = os.path.join(img_dir, f'{next_file_id}.jpg')
+    shutil.copy(img_fp, dest_img_fp)
+
+    # Extract image metadata and save in COCO-compatible JSON format.
+    (height, width, _) = seg_mask.shape
+    image_info = create_coco_image_info(img_fp, next_file_id, width, height)
+    conversion_metadata['images'].append(image_info)
+
+    # Update remaining elements in the conversion_metadata
+    conversion_metadata['annotations'].extend(local_annotations)
+    conversion_metadata['next_ann_id'] = next_ann_id
+    conversion_metadata['next_file_id'] += 1
+
+
+def convert_to_coco(src_dir,
+        dst_dir,
+        required_keywords=[],
+        reject_keywords=[],
+        want_labels=['background',]):
+
+    metadata = filter_ade20k_dataset(src_dir, required_keywords,
+            reject_keywords)
+
+    (label_to_new_id, new_id_to_label, \
+            old_id_to_new_id) = get_new_label_mappings(src_dir, want_labels)
+
+    # COCO format requires us to only provide non-background labels and to begin
+    # the counts at index 1.
+    labelmap_coco_format = [
+            {"id": new_id, "name": label} for (new_id,
+                label) in new_id_to_label.items() if new_id != 0
+    ]
+
+    (trn_dir, val_dir, trn_annot_fpath, val_annot_fpath) = create_coco_directories(dst_dir)
+
+    partition2filepaths = {
+        "training": (trn_dir, trn_annot_fpath),
+        "validation": (val_dir, val_annot_fpath),
+    }
+
+    for partition, samples in metadata.items():
+        print(f"Processing partition {partition}")
+
+        img_dir, annot_fpath = partition2filepaths[partition]
+        # Pass this between functions as needed to keep track of information
+        # to go in the outputted JSON file.
+        conversion_metadata = {
+            'categories': labelmap_coco_format,
+            'images': [],
+            'annotations': [],
+            'next_file_id': 0,
+            'next_ann_id': 0,
+        }
+
+        for idx, (img_fp, seg_fp) in enumerate(samples):
+            if (idx + 1) % 500 == 0:
+                print(f"Processed [{idx+1}]/[{len(samples)}]")
+
+            process_coco_sample(img_dir, conversion_metadata,
+                    old_id_to_new_id, img_fp, seg_fp)
+
+
+        # This is the COCO-formatted JSON annotations payload that we'll
+        # save for this partition.
+        coco_payload = {
+            'categories': labelmap_coco_format,
+            'images': conversion_metadata['images'],
+            'annotations': conversion_metadata['annotations'],
+        }
+
+        print(f"Saving to {annot_fpath}")
+        with open(annot_fpath, 'w') as wf:
+            json.dump(coco_payload, wf)
+
+        print(f"Completed {partition} partition")
+        print(f"Kept a total of {len(coco_payload['images'])} of the {len(samples)} images")
 
 
 def disp_seg(new_seg_mask, new_id_to_label, dpi=200):
