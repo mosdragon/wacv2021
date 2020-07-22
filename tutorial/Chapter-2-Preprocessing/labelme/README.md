@@ -6,7 +6,7 @@ Here, we've provided a modified version of the [script][conversion_script] to
 allow you to convert a labelme dataset into a proper COCO-formatted dataset for
 use with any Segmentation model that supports the COCO format.
 
-Here we provide you with the commands needed to run labelme with the same labels
+We also provide you with the commands needed to run labelme with the same labels
 we've used to make your own annotations, and then the conversion script to
 create the final COCO-formatted dataset.
 
@@ -69,10 +69,11 @@ the COCO format using this `labelme2coco.py` script, slightly modified from the
 python labelme2coco.py ./raw_labelme
 ```
 
-This will generate a new folder called `labelme_coco` in the current directory.
+This will generate a new folder called `coco_labelme` in the current directory.
 The contents of the directory will be a dataset formatted exactly like COCO
 2014.
 
 ---
 [labelme]: https://github.com/wkentaro/labelme
 [conversion_script]: https://github.com/wkentaro/labelme/blob/master/examples/semantic_segmentation/labelme2voc.py
+[miniconda]: https://docs.conda.io/en/latest/miniconda.html

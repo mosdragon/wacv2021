@@ -4,3 +4,4 @@ db.sqlite3
 **/.ipynb_checkpoints
 datasets/ADE20K_2016_07_26
 datasets/bedroom_scenes*
+tutorial/Chapter-2-Preprocessing/labelme/coco_labelme/
