@@ -8,11 +8,8 @@ from collections import defaultdict
 import shutil
 import json
 import os
-import re
 from datetime import datetime
-
 from pathlib import Path
-from PIL import Image
 
 import numpy as np
 import scipy.io
@@ -20,12 +17,14 @@ from imageio import imread, imsave
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-
 import cv2
 
 from pycocotools import mask as cocomask
-from pycocotools import coco as cocoapi
 
+
+# =============================================================================
+#                               HELPERS
+# =============================================================================
 
 def filter_ade20k_dataset(src_dir, required_keywords=[], reject_keywords=[]):
     """
@@ -57,7 +56,7 @@ def filter_ade20k_dataset(src_dir, required_keywords=[], reject_keywords=[]):
         partition_root = os.path.join(src_dir, "images", partition)
         root = Path(partition_root)
 
-        for idx, filepath in enumerate(root.glob("**/*.jpg")):
+        for filepath in root.glob("**/*.jpg"):
             if filepath.is_dir():
                 continue
 
@@ -91,6 +90,13 @@ def get_all_ade20k_labels(src_dir):
     """
     Given a path to the ADE20K dataset, this function will return
     a list of all of the labels used by ADE20K as a list.
+
+    Args:
+        :src_dir: - path to the unzipped ADE20K dataset
+
+    Returns:
+        :all_labels: - a list of text labels used by ADE20K. The position in
+            the list indicates the integer label for that text label.
     """
     meta = scipy.io.loadmat(os.path.join(src_dir, 'index_ade20k.mat'), squeeze_me=True)
     # Only the 'index' field stores the data
@@ -104,15 +110,33 @@ def get_all_ade20k_labels(src_dir):
     return all_labels
 
 
-def get_new_label_mappings(src_dir, grouped_labels):
+def get_new_label_mappings(src_dir, want_labels):
     """
+    To create a ADE20K subset with a subset of the classes, we need to create
+    mappings between the old_ids, the integer labels used by the full ADE20K
+    dataset, and new_ids, the integer labels we'll use for our generated
+    dataset.
+
+    These mappings will allow us to preserve the labels we are interested in
+    while still being able to determine which text label they represent.
+
+    Args:
+        :src_dir: - path to the unzipped ADE20K dataset
+        :want_labels: a list of tuples, where the tuple elements are labels
+            from the full ADE20K dataset that we will combine into single
+            labels.
+
+    Returns:
+        :label_to_new_id: - mapping of new string labels to new_id integers.
+        :new_id_to_label: - a reverse mapping of label_to_new_id
+        :old_id_to_new_id: - a mapping of old_id integer labels to new_id
+            integer labels. This contains only the old labels for labels of
+            interest to us, which have corresponding text labels in want_labels
     """
     original_labels = get_all_ade20k_labels(src_dir)
 
     # Map ALL text labels to integer values
     label_to_old_id = {label: i for (i, label) in enumerate(original_labels)}
-    # Create a reverse mapping -- integers to text labels.
-    old_id_to_label = {i: label for (label, i) in label_to_old_id.items()}
 
     # Map individual labels to their new_ids
     label_to_new_id = {}
@@ -124,39 +148,85 @@ def get_new_label_mappings(src_dir, grouped_labels):
     # Background label always maps to 0
     old_id_to_new_id[0] = 0
 
-    for new_id, group in enumerate(grouped_labels):
-        for label in group:
+    for new_id, label_group in enumerate(want_labels):
+        for label in label_group:
             label_to_new_id[label] = new_id
 
             if label in label_to_old_id:
                 old_id = label_to_old_id[label]
                 old_id_to_new_id[old_id] = new_id
 
-        # The value at new_id will be the group label combined into
+        # The value at new_id will be the label_group label combined into
         # a single string.
-        new_id_to_label[new_id] = ' | '.join(group)
+        new_id_to_label[new_id] = ' | '.join(label_group)
 
 
     return (label_to_new_id, new_id_to_label, old_id_to_new_id)
+
+
+def disp_seg(seg_mask, new_id_to_label, dpi=200):
+    """
+    Produces an image from the 1-channel segmentation with labels assigned
+    according to the LABEL_NAMES from refinement.py.
+
+    Args:
+        :seg_mask: - 1-channel numpy array
+        :new_id_to_label: - A mapping from integer label to text label.
+        :dpi: - Dots Per Inch, higher value means larger image.
+
+    """
+    unique_vals = sorted(np.unique(seg_mask).tolist())
+    text_labels = [new_id_to_label[v] for v in unique_vals]
+
+    # Create a new label encoding, use only values 0 - len(unique_vals)
+    new_seg = seg_mask * 0
+    for idx, val in enumerate(unique_vals):
+        new_seg[(seg_mask == val)] = idx
+
+    plt.figure(dpi=dpi)
+    im = plt.imshow(new_seg)
+
+    # Hide the grid
+    plt.axis("off")
+
+    # Get the colors of the values, according to thecolormap used by imshow.
+    colors = [im.cmap(im.norm(value)) for value in np.unique(new_seg)]
+
+    # Create a patch (proxy artist) for every color.
+    patches = [mpatches.Patch(color=c, label=t[:15]) for (c, t) in zip(colors, text_labels)]
+
+    # Put those patched as legend-handles into the legend
+    plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+
 
 # =============================================================================
 #                               VOC Dataset Format
 # =============================================================================
 
-def create_new_seg_mask(seg_mask, old_id_to_new_id, new_id_to_label):
+def create_voc_seg_mask(seg_mask, old_id_to_new_id):
     """
     Transform an ADE20K segmentation mask into a VOC-style segmentation
-    mask using the mappings old_id_to_new_id and new_id_to_label.
+    mask using the mapping old_id_to_new_id.
+
+    Args:
+        :seg_mask: - The ADE20K segmentation image for a given image
+        :old_id_to_new_id: - a mapping of old_id integer labels to new_id
+            integer labels. This contains only the old labels for labels of
+            interest to us, which have corresponding text labels in want_labels
+
+    Returns:
+        :voc_seg_mask: - a segmentation mask with only the integer labels found
+            in old_id_to_new_id.
     """
 
     # Create a new one-channel mask
     h, w, _ = seg_mask.shape
-    new_seg_mask = np.zeros((h, w)).astype(np.uint8)
+    voc_seg_mask = np.zeros((h, w)).astype(np.uint8)
 
     # The seg_mask's green channel stores the instance id.
     instance_ids = np.unique(seg_mask[:, :, 1])
     for instance_id in instance_ids:
-        # Instance id 0 belongs to the background. Since the new_seg_mask is
+        # Instance id 0 belongs to the background. Since the voc_seg_mask is
         # initialized to 0's (background label), we do not have to explicitly
         # handle this case.
         if instance_id == 0:
@@ -178,29 +248,29 @@ def create_new_seg_mask(seg_mask, old_id_to_new_id, new_id_to_label):
         new_id = old_id_to_new_id[old_id]
 
         # Color the pixels corresponding to this label with the integer label.
-        new_seg_mask[pixels] = new_id
+        voc_seg_mask[pixels] = new_id
 
-    return new_seg_mask
+    return voc_seg_mask
 
 
-def is_sparse_mask(new_seg_mask, threshold=.70):
+def is_sparse_mask(voc_seg_mask, threshold=.70):
     """
-    This informs us if a new_seg_mask has too many "background" pixels.
+    This informs us if a voc_seg_mask has too many "background" pixels.
 
     If more than the threshold ratio of the image has the integer label
     '0', then we consider the mask to be sparse.
 
     Args:
-        :new_seg_mask: - a 1-channel numpy array
+        :voc_seg_mask: - a 1-channel numpy array
         :threshold: - a value from 0 - 1.0
 
     Returns:
         :is_sparse: - True if the mask is more than threshold percent
             background pixels, false otherwise
     """
-    h, w = new_seg_mask.shape
+    h, w = voc_seg_mask.shape
     n_pixels = h * w
-    n_zeros = n_pixels - np.count_nonzero(new_seg_mask)
+    n_zeros = n_pixels - np.count_nonzero(voc_seg_mask)
     ratio = n_zeros / n_pixels
     is_sparse = (ratio >= threshold)
 
@@ -208,7 +278,13 @@ def is_sparse_mask(new_seg_mask, threshold=.70):
 
 
 def create_voc_directories(dst_dir):
-    """Creates the same directory structure as the PASCAL VOC 2012 dataset."""
+    """
+    Creates the same directory structure as the PASCAL VOC 2012 dataset.
+
+    Args:
+        :dst_dir: - destination path, this directory will be created and its
+            subdirectories will also be created.
+    """
 
     VOC_DIR = os.path.join(dst_dir, 'VOCdevkit', 'VOC2012')
 
@@ -237,15 +313,31 @@ def create_voc_directories(dst_dir):
     return (DST_IMG_DIR, DST_ANNOT_DIR, PARTITIONS_DIR)
 
 
-def convert_to_voc(src_dir, dst_dir, required_keywords=[],
+def convert_to_voc(src_dir,
+        dst_dir,
+        required_keywords=[],
         reject_keywords=[],
         want_labels=['background',]):
+    """
+    Create a subset of ADE20K and export in the VOC format. We can filter
+    by scene and objects to have a highly customized subset.
+
+    Args:
+        :src_dir: - path to the unzipped ADE20K dataset
+        :dst_dir: - destination path, this directory will be created.
+        required_keywords: - A list of scenes/keywords, the samples kept from
+            the ADE20K dataset must belong to one of these scenes.
+        :reject_keywords: - A list of scenes/scene-subclasses, the samples kept
+            from the ADE20k dataset must not belong to any of these.
+        :want_labels: a list of tuples, where the tuple elements are labels
+            from the full ADE20K dataset that we will combine into single
+            labels.
+    """
 
     metadata = filter_ade20k_dataset(src_dir, required_keywords,
             reject_keywords)
 
-    (label_to_new_id, new_id_to_label, \
-        old_id_to_new_id) = get_new_label_mappings(src_dir, want_labels)
+    (label_to_new_id, _,  old_id_to_new_id) = get_new_label_mappings(src_dir, want_labels)
 
     (img_dir, annot_dir, partitions_dir) = create_voc_directories(dst_dir)
 
@@ -261,16 +353,16 @@ def convert_to_voc(src_dir, dst_dir, required_keywords=[],
 
             # Create a new segmentation mask from the original annotation.
             seg_mask = imread(seg_fp)
-            new_seg_mask = create_new_seg_mask(seg_mask, old_id_to_new_id, new_id_to_label)
+            voc_seg_mask = create_voc_seg_mask(seg_mask, old_id_to_new_id)
 
             # We do not want to keep sparse masks in the new dataset.
-            if is_sparse_mask(new_seg_mask):
+            if is_sparse_mask(voc_seg_mask):
                 continue
 
             # Place the image and the new segmentation mask in the appropriate
             # directories.
             shutil.copy(img_fp, new_img_fp)
-            imsave(new_seg_fp, new_seg_mask)
+            imsave(new_seg_fp, voc_seg_mask)
 
             # Add this sample name to the kept_samples list
             kept_samples.append(sample_name)
@@ -301,8 +393,14 @@ def convert_to_voc(src_dir, dst_dir, required_keywords=[],
 
 def get_voc_labelmap(dst_dir):
     """
-    Get the label mapping from a VOC dataset. This is the label_to_new_id
-    mapping.
+    Get the label mapping from our generated VOC dataset. This is the
+    label_to_new_id mapping.
+
+    Args:
+        :dst_dir: - destination path where the VOC dataset is stored.
+
+    Returns:
+        :label_to_new_id: - a mapping of text labels to new_ids.
     """
     labelmap_fp = os.path.join(dst_dir, 'labelmap.json')
     with open(labelmap_fp, 'r') as rf:
@@ -310,12 +408,20 @@ def get_voc_labelmap(dst_dir):
 
     return label_to_new_id
 
+
 # =============================================================================
 #                               COCO Dataset Format
 # =============================================================================
 
+
 def create_coco_directories(dst_dir):
-    """Creates the same directory structure as the PASCAL VOC 2012 dataset."""
+    """
+    Creates the same directory structure as the COCO dataset.
+
+    Args:
+        :dst_dir: - destination path, this directory will be created and its
+            subdirectories will also be created.
+    """
     trn_dir = os.path.join(dst_dir, "train2014")
     val_dir = os.path.join(dst_dir, "val2014")
     annot_dir = os.path.join(dst_dir, "annotations")
@@ -336,6 +442,16 @@ def create_coco_image_info(img_fp, image_id, width, height):
     Create COCO metadata for each image. Some of the fields specified
     here with constants are required for the format but unused in our
     training and inference pipeline.
+
+    Args:
+        :img_fp: - path to an ADE20K image
+        :image_id: - an id unique to this image, increments by 1 for every img.
+        :width: - this image's width
+        :height: - this image's height
+
+    Returns:
+        :image_info: - a dictionary of image information required for the COCO
+            format.
     """
 
     # The sample name is the file's basename without the extension
@@ -355,7 +471,26 @@ def create_coco_image_info(img_fp, image_id, width, height):
     return image_info
 
 
-def process_coco_sample(img_dir, conversion_metadata, old_id_to_new_id, img_fp, seg_fp):
+def process_coco_sample(img_dir, conversion_metadata, old_id_to_new_id,
+        img_fp, seg_fp):
+    """
+    This function processes a single ADE20K image and its segmentation for
+    conversion to the COCO format.
+
+    It goes through the segmentation image, creates COCO-style polygon
+    annotations for each class we're interested in, and does some book-keeping
+    to ensure once we process every sample, we have a proper COCO-formatted
+    dataset.
+
+    Args:
+        :img_dir: -
+        :conversion_metadata: - Some global info such as what the next annotation
+            id and the next file id will be. This is updated by every function call
+            to produce the final COCO-formatted dataset.
+        :old_id_to_new_id: - mapping of old_ids to new_ids.
+        :img_fp: - path to an ADE20K image file.
+        :seg_fp: - path to the corresponding ADE20K segmentation file.
+    """
     local_annotations = []
     next_ann_id = conversion_metadata['next_ann_id']
     next_file_id = conversion_metadata['next_file_id']
@@ -366,7 +501,7 @@ def process_coco_sample(img_dir, conversion_metadata, old_id_to_new_id, img_fp, 
     # The seg_mask's green channel stores the instance id.
     instance_ids = np.unique(seg_mask[:, :, 1])
     for instance_id in instance_ids:
-        # Instance id 0 belongs to the background. Since the new_seg_mask is
+        # Instance id 0 belongs to the background. Since the voc_seg_mask is
         # initialized to 0's (background label), we do not have to explicitly
         # handle this case.
         if instance_id == 0:
@@ -441,12 +576,27 @@ def convert_to_coco(src_dir,
         required_keywords=[],
         reject_keywords=[],
         want_labels=['background',]):
+    """
+    Create a subset of ADE20K and export in the COCO format. We can filter
+    by scene and objects to have a highly customized subset.
+
+    Args:
+        :src_dir: - path to the unzipped ADE20K dataset
+        :dst_dir: - destination path, this directory will be created.
+        required_keywords: - A list of scenes/keywords, the samples kept from
+            the ADE20K dataset must belong to one of these scenes.
+        :reject_keywords: - A list of scenes/scene-subclasses, the samples kept
+            from the ADE20k dataset must not belong to any of these.
+        :want_labels: a list of tuples, where the tuple elements are labels
+            from the full ADE20K dataset that we will combine into single
+            labels.
+    """
 
     metadata = filter_ade20k_dataset(src_dir, required_keywords,
             reject_keywords)
 
-    (label_to_new_id, new_id_to_label, \
-            old_id_to_new_id) = get_new_label_mappings(src_dir, want_labels)
+    (_, new_id_to_label, old_id_to_new_id) = get_new_label_mappings(src_dir,
+            want_labels)
 
     # COCO format requires us to only provide non-background labels and to begin
     # the counts at index 1.
@@ -499,37 +649,3 @@ def convert_to_coco(src_dir,
         print(f"Completed {partition} partition")
         print(f"Kept a total of {len(coco_payload['images'])} of the {len(samples)} images")
 
-
-def disp_seg(new_seg_mask, new_id_to_label, dpi=200):
-    """
-    Produces an image from the 1-channel segmentation with labels assigned
-    according to the LABEL_NAMES from refinement.py.
-
-    Args:
-        :new_seg_mask: - 1-channel numpy array
-        :new_id_to_label: - A mapping from integer label to text label.
-        :dpi: - Dots Per Inch, higher value means larger image.
-
-    """
-    unique_vals = sorted(np.unique(new_seg_mask).tolist())
-    text_labels = [new_id_to_label[v] for v in unique_vals]
-
-    # Create a new label encoding, use only values 0 - len(unique_vals)
-    new_seg = new_seg_mask * 0
-    for idx, val in enumerate(unique_vals):
-        new_seg[(new_seg_mask == val)] = idx
-
-    fig = plt.figure(dpi=dpi)
-    im = plt.imshow(new_seg)
-
-    # Hide the grid
-    plt.axis("off")
-
-    # Get the colors of the values, according to thecolormap used by imshow.
-    colors = [im.cmap(im.norm(value)) for value in np.unique(new_seg)]
-
-    # Create a patch (proxy artist) for every color.
-    patches = [mpatches.Patch(color=c, label=t[:15]) for (c, t) in zip(colors, text_labels)]
-
-    # Put those patched as legend-handles into the legend
-    plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
