@@ -19,7 +19,9 @@ conda create --name kdd_demo
 conda activate kdd_demo
 
 pip install --upgrade numpy==1.16
-pip install matplotlib imageio scipy pandas Pillow scikit-image
+pip install matplotlib imageio scipy pandas Pillow scikit-image imageio
+pip install Cython
+pip install pycocotools
 
 conda install -y opencv
 conda install -y jupyter
@@ -72,3 +74,5 @@ one-by-one.
 [miniconda]: https://docs.conda.io/en/latest/miniconda.html
 [installation]: https://conda.io/projects/conda/en/latest/user-guide/install/index.html
 [ade20k]: https://groups.csail.mit.edu/vision/datasets/ADE20K/ADE20K_2016_07_26.zip
+[bedroom_voc]: https://storage.googleapis.com/kdd2020hdvisai/static/datasets/bedroom_scenes_voc.zip
+[bedroom_coco]: https://storage.googleapis.com/kdd2020hdvisai/static/datasets/bedroom_scenes_coco.zip

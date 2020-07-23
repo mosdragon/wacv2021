@@ -11,19 +11,11 @@ we've used to make your own annotations, and then the conversion script to
 create the final COCO-formatted dataset.
 
 ## Setup
-Ensure you are using Python 3.6+. We recommend using [miniconda][miniconda],
-just as with the tutorial notebooks. Once you have activated the conda
-environment, ensure that the following packages are installed.
-
 __Note:__ To use `labelme` to make your own annotations, you will need to be on
 a machine with a graphical interface (Windows, MacOS, or a Linux machine with a
 graphical interface).
 
 ```bash
-pip install numpy
-pip install Pillow
-pip install Cython
-pip install pycocotools
 pip install labelme
 ```
 
