@@ -29,6 +29,22 @@ line `conda install -y pytorch torchvision -c pytorch` will change slightly if
 you have a CUDA-enabled device.
 
 
+### Download Pretrained Model
+Since model training is very compute-intensive and takes hours even with a GPU
+present, we've trained models for 2-6 hours that we can share with you here.
+
+To download the best models, run the following in your terminal from this
+_tutorials_ directory:
+```bash
+cd mmdetection
+mkdir -p work_dirs/ade20k/short
+mkdir -p work_dirs/ade20k/long
+
+cd work_dirs/ade20k/long
+wget https://storage.googleapis.com/kdd2020hdvisai/static/models/work_dirs_ade20k_long.zip
+unzip -qq work_dirs_ade20k_long.zip
+```
+
 ---
 [mmdetection]: https://github.com/open-mmlab/mmdetection
 [install]: https://github.com/open-mmlab/mmdetection/blob/master/docs/install.md
