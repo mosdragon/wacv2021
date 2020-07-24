@@ -1,0 +1,3 @@
+[submodule "tutorial/Chapter-3-Training-Segmentation-Models/mmdetection"]
+	path = tutorial/Chapter-3-Training-Segmentation-Models/mmdetection
+	url = git@github.com:mosdragon/mmdetection.git
