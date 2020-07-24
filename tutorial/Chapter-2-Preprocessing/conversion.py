@@ -460,7 +460,7 @@ def create_coco_image_info(img_fp, image_id, width, height):
 
     image_info = {
             "id": image_id,
-            "file_name": sample_name,
+            "file_name": f'{image_id}.jpg',
             "width": width,
             "height": height,
             "date_captured": datetime.utcnow().isoformat(' '),
