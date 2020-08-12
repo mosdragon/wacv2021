@@ -9,7 +9,12 @@ installation, and point you to platform-specific instructions.
 Additionally, we've cloned the repository here to make installation faster.
 
 ### Install mmdetection
-__Note:__ Run the following if you do not have CUDA on your machine (i.e if you
+__Note:__: if you do not have CUDA on your machine (i.e if you
+have macOS or Linus but without a CUDA-enabled GPU), please follow
+the Colab version of our Chapter 3-4 tutorial, which still trains
+using the same dataset we prepared in Chapter 2.
+
+(obsolete): Run the following if you do not have CUDA on your machine (i.e if you
 have macOS or Linux but without a CUDA-enabled GPU).
 ```bash
 conda activate kdd_demo
