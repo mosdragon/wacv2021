@@ -11,4 +11,4 @@ serve:
 
 .PHONY: deploy
 deploy:
-	@gsutil -m cp -r *.html css js ${DEST}
+	@gsutil -m cp -r *.html css js img ${DEST}
