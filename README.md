@@ -44,11 +44,7 @@ new datasets.
 .
 ├── README.md
 ├── datasets
-│   ├── ADE20K_2016_07_26
-│   ├── ADE20K_2016_07_26.zip
 │   ├── README.md
-│   ├── bedroom_scenes_coco
-│   └── bedroom_scenes_voc
 ├── site
 │   ├── Makefile
 │   ├── css
