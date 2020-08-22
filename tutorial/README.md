@@ -5,10 +5,10 @@ The minimum pre-requisite for following this tutorial is a programming environme
 with access to basic command line tools. Ideally, a virtual machine or a local Linux
 environment would work best.
 
-__Note__: For chapters 3-4 you will need a GPU-enabled environment. If you do not have access
-to a GPU, you can also follow using the Google Colab version of our chapter 3-4 tutorials
-which trains the same model following a similar approach. We did not record a video
-for the Colab version of our tutorial but will answer any question as needed.
+__Note__: For chapters 3-4 you will find two separate versions of the tutorial. If you 
+do not have access to a GPU, you can follow using the Google Colab version of our 
+chapter 3-4 tutorials, which we will be presenting live. If you have access to a 
+GPU-enabled environment, our recorded videos lead you through that version of the tutorial.
 
 ## Setup
 There are a lot of dependencies that break if they are mixed with newer
