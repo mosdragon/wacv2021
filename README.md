@@ -2,7 +2,7 @@
 This repo hosts the site and the resources for The Home Depot's Computer Vision
 Computer Vision Workshop for KDD 2020.
 
-![Segmentation Visualized][site/img/segmentation.png]
+![Segmentation Visualized][segmentation_img]
 
 ## Workshop Site
 The website is currently hosted [here][site]. It contains information about the
@@ -92,3 +92,4 @@ unzip -qq <TODO>
 [site]: https://storage.googleapis.com/kdd2020hdvisai/static/index.html
 [colab]: https://colab.research.google.com/notebooks/intro.ipynb
 [git]: https://git-scm.com/downloads
+[segmentation_img]: site/img/segmentation.png
