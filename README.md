@@ -34,7 +34,7 @@ In this repo, you'll find two versions of our tutorial:
   notebook hosted by Google with pre-installed packages and access to a
   CUDA-enabled GPU. This GPU will allow you to run our training and
   post-processing code without needing a GPU of your own. This can be found in
-  [tutorial/Colab-Chapters_3_and_4][colab_notebook].
+  [tutorial/Colab_Chapters_3_and_4][colab_notebook].
 
 ## Directory Structure
 Here's the layout of our project. When you download the repository, your
@@ -92,4 +92,5 @@ you as part of the notebook initialization.
 [colab]: https://colab.research.google.com/notebooks/intro.ipynb
 [git]: https://git-scm.com/downloads
 [segmentation_img]: site/img/segmentation.png
-[colab_notebook]: https://github.com/mosdragon/kdd2020/blob/master/tutorial/Colab-Chapter3_4/Training_Colab.ipynb
+[colab_notebook]:
+https://github.com/mosdragon/kdd2020/blob/master/tutorial/Colab_Chapters_3_and_4/Training_Colab.ipynb
