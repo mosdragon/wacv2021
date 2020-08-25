@@ -57,7 +57,7 @@ new datasets.
     ├── Chapter-2-Preprocessing
     ├── Chapter-3-Training-Segmentation-Models
     ├── Chapter-4-Postprocessing
-    ├── Colab-Chapters_3_and_4
+    ├── Colab_Chapters_3_and_4
     └── README.md
 ```
 
