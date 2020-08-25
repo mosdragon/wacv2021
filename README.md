@@ -8,6 +8,10 @@ Computer Vision Workshop for KDD 2020.
 The website is currently hosted [here][site]. It contains information about the
 workshop presenters as well as our abstract.
 
+## Slides
+You can find our [introductory slides][intro_slides] and our [Chapter 1 Tutorial
+Slides][chapter_1_slides] linked in this line.
+
 ## Presenters
 - Cody Wang
 - Osama Sakhi
@@ -82,7 +86,7 @@ wget https://storage.googleapis.com/kdd2020hdvisai/static/datasets/bedroom_scene
 unzip -qq bedroom_scenes_coco_final.zip
 unzip -qq bedroom_scenes_voc.zip
 ```
-__NOTE:__: You do not need to run through this step if you're using the Google
+__NOTE:__ You do not need to run through this step if you're using the Google
 Colab version of the tutorial, as that version will download the dataset for
 you as part of the notebook initialization.
 
@@ -94,3 +98,6 @@ you as part of the notebook initialization.
 [segmentation_img]: site/img/segmentation.png
 [colab_notebook]:
 https://github.com/mosdragon/kdd2020/blob/master/tutorial/Colab_Chapters_3_and_4/Training_Colab.ipynb
+
+[intro_slides]: https://storage.googleapis.com/kdd2020hdvisai/static/resources/Intro_Slides.pptx
+[chapter_1_slides]: https://storage.googleapis.com/kdd2020hdvisai/static/resources/Tutorial_Chapter_1.pptx
