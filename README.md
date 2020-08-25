@@ -9,7 +9,7 @@ The website is currently hosted [here][site]. It contains information about the
 workshop presenters as well as our abstract.
 
 ## Slides
-You can find our [introductory slides][intro_slides] and our [Chapter 1 Tutorial
+You can find our [overview slides][overview_slides] and our [Chapter 1 Tutorial
 Slides][chapter_1_slides] linked in this line.
 
 ## Presenters
@@ -99,5 +99,5 @@ you as part of the notebook initialization.
 [colab_notebook]:
 https://github.com/mosdragon/kdd2020/blob/master/tutorial/Colab_Chapters_3_and_4/Training_Colab.ipynb
 
-[intro_slides]: https://storage.googleapis.com/kdd2020hdvisai/static/resources/Intro_Slides.pptx
+[overview_slides]: https://storage.googleapis.com/kdd2020hdvisai/static/resources/Overview_Slides.pptx
 [chapter_1_slides]: https://storage.googleapis.com/kdd2020hdvisai/static/resources/Tutorial_Chapter_1.pptx
