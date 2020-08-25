@@ -34,7 +34,7 @@ In this repo, you'll find two versions of our tutorial:
   notebook hosted by Google with pre-installed packages and access to a
   CUDA-enabled GPU. This GPU will allow you to run our training and
   post-processing code without needing a GPU of your own. This can be found in
-  `tutorial/Colab-Chapters_3_and_4`.
+  [tutorial/Colab-Chapters_3_and_4][colab_notebook].
 
 ## Directory Structure
 Here's the layout of our project. When you download the repository, your
@@ -57,7 +57,7 @@ new datasets.
     ├── Chapter-2-Preprocessing
     ├── Chapter-3-Training-Segmentation-Models
     ├── Chapter-4-Postprocessing
-    ├── Colab-Chapter3_4
+    ├── Colab-Chapters_3_and_4
     └── README.md
 ```
 
@@ -73,15 +73,18 @@ unzip -qq ADE20K_2016_07_26.zip
 
 If you want to skip Chapter 2 altogether and just move onto training and
 post-processing, you can download the generated datasets by running the
-following.
+following:
 ```bash
 cd datasets
-wget <TODO>
-wget <TODO>
+wget https://storage.googleapis.com/kdd2020hdvisai/static/datasets/bedroom_scenes_coco_final.zip
+wget https://storage.googleapis.com/kdd2020hdvisai/static/datasets/bedroom_scenes_voc.zip
 
-unzip -qq <TODO>
-unzip -qq <TODO>
+unzip -qq bedroom_scenes_coco_final.zip
+unzip -qq bedroom_scenes_voc.zip
 ```
+__NOTE:__: You do not need to run through this step if you're using the Google
+Colab version of the tutorial, as that version will download the dataset for
+you as part of the notebook initialization.
 
 ---
 
@@ -89,3 +92,4 @@ unzip -qq <TODO>
 [colab]: https://colab.research.google.com/notebooks/intro.ipynb
 [git]: https://git-scm.com/downloads
 [segmentation_img]: site/img/segmentation.png
+[colab_notebook]: https://github.com/mosdragon/kdd2020/blob/master/tutorial/Colab-Chapter3_4/Training_Colab.ipynb
