@@ -1,33 +1,27 @@
-# Computer Vision: Deep Dive into Object Segmentation Approaches
-This repo hosts the site and the resources for The Home Depot's Computer Vision
-Computer Vision Workshop for KDD 2020.
+# Computer Vision In Practice – Building An End-to-End Pipeline for Object Detection And Segmentation
+This repo hosts the resources for the Computer Vision Workshop presented at the
+Toronto Machine Learning Summit 2020.
 
 ![Segmentation Visualized][segmentation_img]
-
-## Workshop Site
-The website is currently hosted [here][site]. It contains information about the
-workshop presenters as well as our abstract.
 
 ## Slides
 You can find our [overview slides][overview_slides] and our [Chapter 1 Tutorial
 Slides][chapter_1_slides] linked in this line.
 
 ## Presenters
-- Cody Wang
-- Osama Sakhi
-- Matthew Hagen
+- Yuanbo (Cody) Wang
 - Ala Eddine Ayadi
 
 ## Downloading the Repository
 You will need the [Git][git] client in a terminal to download all the packages
 and run the following command in your terminal:
 ```bash
-git clone --recursive https://github.com/mosdragon/kdd2020.git
+git clone --recursive https://github.com/mcdy143/tmls_computer_vision.git
 ```
 
 ## Tutorial
 This repo contains all resources used for the workshop, including our
-Python-based tutorial, which you can execute on your own computer.
+hands-on Python-based tutorial.
 
 In this repo, you'll find two versions of our tutorial:
 * _Jupyter notebook-only version_: This version requires a working Jupyter
@@ -97,7 +91,7 @@ you as part of the notebook initialization.
 [git]: https://git-scm.com/downloads
 [segmentation_img]: site/img/segmentation.png
 [colab_notebook]:
-https://github.com/mosdragon/kdd2020/blob/master/tutorial/Colab_Chapters_3_and_4/Training_Colab.ipynb
+https://github.com/mcdy143/tmls_computer_vision/blob/master/tutorial/Colab_Chapters_3_and_4/Training_Colab.ipynb
 
 [overview_slides]: https://storage.googleapis.com/kdd2020hdvisai/static/resources/Overview_Slides.pptx
 [chapter_1_slides]: https://storage.googleapis.com/kdd2020hdvisai/static/resources/Tutorial_Chapter_1.pptx
