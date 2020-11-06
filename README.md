@@ -32,7 +32,7 @@ In this repo, you'll find two versions of our tutorial:
   notebook hosted by Google with pre-installed packages and access to a
   CUDA-enabled GPU. This GPU will allow you to run our training and
   post-processing code without needing a GPU of your own. This can be found in
-  [tutorial/Colab_Chapters_3_and_4][colab_notebook].
+  [colab_notebook].
 
 ## Directory Structure
 Here's the layout of our project. When you download the repository, your
