@@ -1,4 +1,4 @@
-DEST="gs://kdd2020hdvisai/static/"
+DEST="gs://wacv2021hdvisai/"
 
 .PHONY: all
 all: serve
