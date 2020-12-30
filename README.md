@@ -1,6 +1,6 @@
-# Computer Vision In Practice – Building An End-to-End Pipeline for Object Detection And Segmentation
-This repo hosts the resources for the Computer Vision Workshop presented at the
-Toronto Machine Learning Summit 2020.
+# Computer Vision in Practice - Building an End-to-End Pipeline for Object Segmentation
+This repo hosts the resources for the Computer Vision Workshop presented at
+WACV 2021.
 
 ![Segmentation Visualized][segmentation_img]
 
@@ -10,6 +10,8 @@ Slides][chapter_1_slides] linked in this line.
 
 ## Presenters
 - Yuanbo (Cody) Wang
+- Osama Sakhi
+- Matthew Hagen
 - Ala Eddine Ayadi
 
 ## Downloading the Repository
