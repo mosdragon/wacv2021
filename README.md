@@ -96,5 +96,5 @@ you as part of the notebook initialization.
 [colab_notebook]:
 https://github.com/mcdy143/tmls_computer_vision/blob/master/tutorial/Colab_Chapters_3_and_4/Training_Colab.ipynb
 
-[overview_slides]: https://storage.googleapis.com/kdd2020hdvisai/static/resources/Overview_Slides_TMLS.pptx
-[chapter_1_slides]: https://storage.googleapis.com/kdd2020hdvisai/static/resources/Tutorial_Chapter_1_TMLS.pptx
+[overview_slides]: https://storage.googleapis.com/wacv2021hdvisai/static/resources/Overview_Slides_WACV.pptx
+[chapter_1_slides]: https://storage.googleapis.com/wacv2021hdvisai/static/resources/Tutorial_Chapter_1_WACV.pptx
