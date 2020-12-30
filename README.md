@@ -18,7 +18,7 @@ Slides][chapter_1_slides] linked in this line.
 You will need the [Git][git] client in a terminal to download all the packages
 and run the following command in your terminal:
 ```bash
-git clone --recursive https://github.com/mcdy143/tmls_computer_vision.git
+git clone --recursive https://github.com/mosdragon/wacv2021.git
 ```
 
 ## Tutorial
