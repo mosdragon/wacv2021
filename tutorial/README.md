@@ -17,8 +17,8 @@ __Note:__ You will need to run Python 3.6 or higher for all of our code to run.
 If you install miniconda, it will install a compatible version by default.
 
 ```bash
-conda create --name kdd_demo
-conda activate kdd_demo
+conda create --name wacv_demo
+conda activate wacv_demo
 
 pip install --upgrade numpy==1.16
 pip install matplotlib imageio scipy pandas Pillow scikit-image imageio
@@ -30,13 +30,13 @@ conda install -y jupyter
 ```
 
 ## Running the Notebooks
-To run the notebooks, you must activate the `kdd_demo` conda environment and
+To run the notebooks, you must activate the `wacv_demo` conda environment and
 start the Jupyter notebook server.
 ```bash
 # Make sure you're in the tutorials directory.
 cd <PROJECT-ROOT>/tutorials
 
-conda activate kdd_demo
+conda activate wacv_demo
 jupyter notebook
 ```
 

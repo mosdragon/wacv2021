@@ -17,7 +17,7 @@ using the same dataset we prepared in Chapter 2.
 (obsolete): Run the following if you do not have CUDA on your machine (i.e if you
 have macOS or Linux but without a CUDA-enabled GPU).
 ```bash
-conda activate kdd_demo
+conda activate wacv_demo
 conda install -y pytorch torchvision -c pytorch
 pip install -U "git+https://github.com/open-mmlab/cocoapi.git#subdirectory=pycocotools"
 pip install mmcv-full
